@@ -1,0 +1,25 @@
+syntax = "proto3";
+package kp.msg;
+
+option java_multiple_files = true;
+option java_package = "org.example.protos";
+option java_outer_classname = "Github";
+
+message GithubKPMsg {
+  string repo = 1;
+  int64 star = 2;
+  int64 fork = 3;
+  int64 watch = 4;
+  repeated Dependency dependencies = 5;
+  int64 timestamp = 6;
+  string description = 7;
+  string license = 8;
+  string author = 9;
+  repeated string keywords = 10;
+  string homepage = 11;
+}
+
+message Dependency {
+  string package = 1;
+  string version = 2;
+}

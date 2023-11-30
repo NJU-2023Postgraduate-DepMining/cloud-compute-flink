@@ -40,3 +40,6 @@ build/
 .idea
 
 dependency-reduced-pom.xml
+
+src/main/java/org/example/protos
+
