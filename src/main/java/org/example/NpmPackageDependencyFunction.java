@@ -10,22 +10,22 @@ import java.util.Iterator;
 public class NpmPackageDependencyFunction implements FlatMapFunction<JsonNode, Tuple2<String, Integer>> {
     @Override
     public void flatMap(JsonNode json, Collector<Tuple2<String, Integer>> out) {
-        System.out.println("json: " + json);
+//        System.out.println("json: " + json);
 
         JsonNode versions = json.get("versions");
 
-        System.out.println("versions: " + versions);
+//        System.out.println("versions: " + versions);
 
         if (versions == null) {
             return;
         }
 
         for (JsonNode v : versions) {
-            System.out.println("v: " + v);
+//            System.out.println("v: " + v);
 
             JsonNode dependencies = v.get("dependencies");
 
-            System.out.println("dependencies: " + dependencies);
+//            System.out.println("dependencies: " + dependencies);
 
             if (dependencies == null) {
                 continue;
@@ -34,7 +34,7 @@ public class NpmPackageDependencyFunction implements FlatMapFunction<JsonNode, T
             for (Iterator<String> it = dependencies.fieldNames(); it.hasNext(); ) {
                 String key = it.next();
 
-                System.out.println("key: " + key);
+//                System.out.println("key: " + key);
 
                 out.collect(new Tuple2<>(key, 1));
             }

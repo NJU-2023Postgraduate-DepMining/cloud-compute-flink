@@ -10,6 +10,8 @@ import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.connectors.redis.RedisSink;
+import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
 
 
 public class NpmJob {
@@ -19,11 +21,10 @@ public class NpmJob {
 
         StreamFormat<String> format = new TextLineInputFormat();
 
-        // reads the contents of a file from a file stream.
-        // /data/npm_all_json.txt
-        final FileSource<String> source = FileSource.forRecordStreamFormat(format,
-//                new Path("file:///data/npm_all_json.txt"))
-                        new Path("file:///data/b.txt"))
+        // 从文件读取数据
+        FileSource<String> source = FileSource.forRecordStreamFormat(format,
+                        new Path("file:///data/npm_all_json.txt"))
+//                        new Path("file:///data/b.txt"))
                 .build();
 
         DataStream<String> lines = env.fromSource(source,
@@ -35,22 +36,23 @@ public class NpmJob {
                 .map(new NpmPackageMapFunction())
                 .name("NpmPackageMapFunction");
 
-        packages.print();
-
         DataStream<Tuple2<String, Integer>> counts = packages
                 .flatMap(new NpmPackageDependencyFunction());
 
+//        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
+//        sum.print();
 
-        counts.print();
+        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
+                .setHost("redis")
+                .setPort(6379)
+                .build();
 
-        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
-
-        sum.print();
+        counts.addSink(new RedisSink<>(conf, new RedisNpmMapper()));
 
 
-        //        output to file
-        sum.sinkTo(FileSink.forRowFormat(new Path("file:///data/out.txt"),
-                new NpmPackageDependencySinkFunction()).build());
+//        //        output to file
+//        counts.sinkTo(FileSink.forRowFormat(new Path("file:///data/out.txt"),
+//                new NpmPackageDependencySinkFunction()).build());
 
 
         env.execute("Npm Job");

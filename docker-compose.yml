@@ -25,3 +25,9 @@ services:
         taskmanager.numberOfTaskSlots: 2
     volumes:
       - "D:/data:/data"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
