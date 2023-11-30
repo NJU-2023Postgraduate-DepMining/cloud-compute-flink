@@ -1,4 +1,4 @@
-package org.example;
+package org.example.npm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
