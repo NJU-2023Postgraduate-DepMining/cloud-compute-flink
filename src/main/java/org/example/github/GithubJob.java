@@ -67,19 +67,19 @@ public class GithubJob {
 
     private static Options getOptions() {
         Options options = new Options();
-        Option input = new Option("kafka", true, "kafka address");
+        Option input = new Option("kafka", true, "kafka address, default: kafka:9092");
         input.setRequired(false);
         options.addOption(input);
 
-        Option topic = new Option("topic", true, "kafka topic");
+        Option topic = new Option("topic", true, "kafka topic, default: topic_github");
         topic.setRequired(false);
         options.addOption(topic);
 
-        Option r = new Option("redis_address", true, "redis address");
+        Option r = new Option("redis_address", true, "redis address, default: redis");
         r.setRequired(false);
         options.addOption(r);
 
-        Option redisPort = new Option("redisPort", true, "redis port");
+        Option redisPort = new Option("redisPort", true, "redis port, default: 6379");
         redisPort.setRequired(false);
         options.addOption(redisPort);
         return options;
