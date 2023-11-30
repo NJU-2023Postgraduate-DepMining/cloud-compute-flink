@@ -1,4 +1,4 @@
-package org.example;
+package org.example.npm;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;

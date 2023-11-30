@@ -1,4 +1,4 @@
-package org.example;
+package org.example.npm;
 
 import org.apache.flink.api.common.serialization.Encoder;
 import org.apache.flink.api.java.tuple.Tuple2;

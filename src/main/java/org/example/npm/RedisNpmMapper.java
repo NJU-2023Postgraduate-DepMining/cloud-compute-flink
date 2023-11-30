@@ -1,4 +1,4 @@
-package org.example;
+package org.example.npm;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommand;
