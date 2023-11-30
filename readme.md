@@ -14,6 +14,8 @@ protoc --java_out=src/main/java .\github_msg.proto
 mvn clean package
 ```
 
+输出 `target/GitHubJob-0.1.jar`
+
 ## 运行参数
 
 ```shell
@@ -23,3 +25,7 @@ usage: utility-name
  -redisPort <arg>       redis port, default: 6379
  -topic <arg>           kafka topic, default: topic_github
 ```
+
+## 输出 example
+
+![屏幕截图 2023-11-30 204616.png](http://lrjia-bucket-1.oss-cn-hangzhou.aliyuncs.com/obsidian/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-11-30%20204616.png)
