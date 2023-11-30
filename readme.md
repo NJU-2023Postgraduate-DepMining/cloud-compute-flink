@@ -30,4 +30,4 @@ usage: utility-name
 
 ## 输出 example
 
-![屏幕截图 2023-11-30 204616.png](http://lrjia-bucket-1.oss-cn-hangzhou.aliyuncs.com/obsidian/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202023-11-30%20204616.png)
+![屏幕截图 2023-11-30 204616](https://github.com/lrjia/cloud-compute-flink/assets/52886379/9f3536af-55c2-4d43-a2e2-76c6b86b740d)
