@@ -6,19 +6,19 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommandDes
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
 import org.example.protos.GithubKPMsg;
 
-public class RedisGithubMapper implements RedisMapper<String> {
+public class RedisGithubMapper implements RedisMapper<GithubRedisMsg> {
     @Override
     public RedisCommandDescription getCommandDescription() {
-        return new RedisCommandDescription(RedisCommand.INCRBY);
+        return new RedisCommandDescription(RedisCommand.RPUSH);
     }
 
     @Override
-    public String getKeyFromData(String data) {
-        return data;
+    public String getKeyFromData(GithubRedisMsg data) {
+        return "github";
     }
 
     @Override
-    public String getValueFromData(String data) {
-        return "1";
+    public String getValueFromData(GithubRedisMsg data) {
+        return data.toString();
     }
 }

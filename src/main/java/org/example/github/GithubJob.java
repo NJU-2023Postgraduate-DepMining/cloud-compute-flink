@@ -2,12 +2,15 @@ package org.example.github;
 
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.redis.RedisSink;
 import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
+import org.apache.flink.table.api.Tumble;
 import org.example.protos.GithubKPMsg;
 import org.apache.commons.cli.*;
 
@@ -52,7 +55,7 @@ public class GithubJob {
                 WatermarkStrategy.noWatermarks(),
                 "GithubKafkaSource");
 
-        DataStream<String> dep = s.flatMap(new GithubDependencyMapFunction());
+        DataStream<GithubRedisMsg> dep = s.flatMap(new GithubDependencyMapFunction());
 
 //        s.print();
         FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
