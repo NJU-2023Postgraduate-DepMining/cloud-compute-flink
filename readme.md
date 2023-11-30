@@ -1,5 +1,7 @@
 # NpmFlink
 
+从 kafka 中读取 github 依赖信息，存入 redis
+
 ## 根据 proto 文件生成 java 文件
 
 protobuf version: 3.25.1
