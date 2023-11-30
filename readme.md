@@ -2,6 +2,8 @@
 
 从 kafka 中读取 github 依赖信息，存入 redis
 
+可以从 release 下载打包完的 jar 包
+
 ## 根据 proto 文件生成 java 文件
 
 protobuf version: 3.25.1
