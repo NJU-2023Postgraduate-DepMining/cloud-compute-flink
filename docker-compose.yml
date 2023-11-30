@@ -8,7 +8,9 @@ services:
     environment:
       - |
         FLINK_PROPERTIES=
-        jobmanager.rpc.address: jobmanager        
+        jobmanager.rpc.address: jobmanager
+    volumes:
+      - "D:/data:/data"
 
   taskmanager:
     image: flink:latest

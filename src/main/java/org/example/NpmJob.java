@@ -22,7 +22,8 @@ public class NpmJob {
         // reads the contents of a file from a file stream.
         // /data/npm_all_json.txt
         final FileSource<String> source = FileSource.forRecordStreamFormat(format,
-                new Path("file:///data/npm_all_json.txt"))
+//                new Path("file:///data/npm_all_json.txt"))
+                        new Path("file:///data/b.txt"))
                 .build();
 
         DataStream<String> lines = env.fromSource(source,
@@ -34,18 +35,24 @@ public class NpmJob {
                 .map(new NpmPackageMapFunction())
                 .name("NpmPackageMapFunction");
 
+        packages.print();
 
         DataStream<Tuple2<String, Integer>> counts = packages
-                .flatMap(new NpmPackageDependencyFunction())
-                .keyBy(x -> x.f0)
-                .sum(1);
+                .flatMap(new NpmPackageDependencyFunction());
+
+
+        counts.print();
+
+        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
+
+        sum.print();
 
 
         //        output to file
-        counts.sinkTo(FileSink.forRowFormat(new Path("file:///data/out.txt"),
+        sum.sinkTo(FileSink.forRowFormat(new Path("file:///data/out.txt"),
                 new NpmPackageDependencySinkFunction()).build());
 
 
-        env.execute("Fraud Detection");
+        env.execute("Npm Job");
     }
 }
