@@ -57,3 +57,10 @@ services:
       - NotSleep=true
     volumes:
       - "D:/data:/data"
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - "D:/data:/data"
