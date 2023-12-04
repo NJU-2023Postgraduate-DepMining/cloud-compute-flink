@@ -20,7 +20,7 @@ import org.example.npm.NpmPackageMapFunction;
 import org.example.protos.GithubKPMsg;
 
 public class Job {
-    public static final String url="jdbc:ch://172.29.4.74:30012/cloud";
+    public static final String url="jdbc:ch://clickhouse.clickhouse:8123/cloud";
     //public static final String url = "jdbc:ch://localhost:8123/cloud";
     //public static final String url = "jdbc:ch://172.29.4.74:30012/test";
     public static final String kafka = "kafka.kafka:9092";
