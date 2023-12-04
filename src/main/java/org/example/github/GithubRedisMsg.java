@@ -1,19 +1,24 @@
 package org.example.github;
 
-public class GithubRedisMsg implements java.io.Serializable {
-    String packageName;
-    String version;
-    Long timestamp;
+import lombok.Getter;
+import lombok.Setter;
 
-    Integer count = 1;
+@Getter
+@Setter
+public class GithubRedisMsg implements java.io.Serializable {
+    private String packageName;
+    private String version;
+    private Long timestamp;
+
+    private Integer count = 1;
 
     public GithubRedisMsg(String packageName, String version, Long timestamp) {
         this.packageName = packageName;
         this.version = version;
         this.timestamp = timestamp;
     }
-
-
+    public GithubRedisMsg() {
+    }
     @Override
     public String toString() {
         // json

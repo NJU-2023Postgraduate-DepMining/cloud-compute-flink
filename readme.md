@@ -32,4 +32,5 @@ usage: utility-name
 
 ## 输出 example
 
-![屏幕截图 2023-11-30 204616](https://github.com/lrjia/cloud-compute-flink/assets/52886379/9f3536af-55c2-4d43-a2e2-76c6b86b740d)
+![屏幕截图 2023-11-30 212117](https://github.com/lrjia/cloud-compute-flink/assets/52886379/b7bd0f77-f4e7-49f2-aa49-da25400a4fdd)
+

@@ -2,7 +2,9 @@ package org.example.npm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.connector.file.src.reader.StreamFormat;
 import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
@@ -15,6 +17,10 @@ import org.example.npm.NpmPackageDependencyFunction;
 import org.example.npm.NpmPackageMapFunction;
 import org.example.npm.RedisNpmMapper;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class NpmJob {
 
@@ -25,8 +31,9 @@ public class NpmJob {
 
         // 从文件读取数据
         FileSource<String> source = FileSource.forRecordStreamFormat(format,
-                        new Path("file:///data/npm_all_json.txt"))
+//                        new Path("file:///data/npm_all_json.txt"))
 //                        new Path("file:///data/b.txt"))
+       new Path("file:///D:\\Learn\\npm.txt"))
                 .build();
 
         DataStream<String> lines = env.fromSource(source,
@@ -38,18 +45,22 @@ public class NpmJob {
                 .map(new NpmPackageMapFunction())
                 .name("NpmPackageMapFunction");
 
-        DataStream<Tuple2<String, Integer>> counts = packages
+        DataStream<Tuple4<String,String,Long, Integer>> counts = packages
                 .flatMap(new NpmPackageDependencyFunction());
+
+
+        counts.addSink(new NpmCHSink());
 
 //        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
 //        sum.print();
 
-        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
-                .setHost("redis")
-                .setPort(6379)
-                .build();
+//        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
+//                .setHost("redis")
+//                .setPort(6379)
+//                .build();
+//
+//        counts.addSink(new RedisSink<>(conf, new RedisNpmMapper()));
 
-        counts.addSink(new RedisSink<>(conf, new RedisNpmMapper()));
 
 
 //        //        output to file

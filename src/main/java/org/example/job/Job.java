@@ -1,33 +1,34 @@
-package org.example.github;
+package org.example.job;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
+import org.apache.commons.cli.*;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.StreamFormat;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.redis.RedisSink;
-import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
-import org.apache.flink.table.api.Tumble;
+import org.example.github.*;
+import org.example.npm.NpmCHSink;
+import org.example.npm.NpmPackageDependencyFunction;
+import org.example.npm.NpmPackageMapFunction;
 import org.example.protos.GithubKPMsg;
-import org.apache.commons.cli.*;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-public class GithubJob {
+public class Job {
     public static void main(String[] args) throws Exception {
         Options options = getOptions();
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
+        StreamFormat<String> format = new TextLineInputFormat();
 
         CommandLine cmd = null;
+
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
@@ -36,11 +37,8 @@ public class GithubJob {
             System.exit(1);
         }
 
-        String kafkaAddress = cmd.getOptionValue("kafka", "kafka:9092");
-        String redisAddress = cmd.getOptionValue("redis_address", "redis");
+        String kafkaAddress = cmd.getOptionValue("kafka", "localhost:9094");
         String kafkaTopic = cmd.getOptionValue("topic", "topic_github");
-        int redisPort = Integer.parseInt(cmd.getOptionValue("redisPort", "6379"));
-
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -49,7 +47,7 @@ public class GithubJob {
         env.getConfig().addDefaultKryoSerializer(unmodColl, UnmodifiableCollectionsSerializer.class);
 
 
-        KafkaSource<GithubKPMsg> source = KafkaSource.<GithubKPMsg>builder()
+        KafkaSource<GithubKPMsg> githubSource = KafkaSource.<GithubKPMsg>builder()
                 .setBootstrapServers(kafkaAddress)
                 .setTopics(kafkaTopic)
                 .setGroupId("my-group")
@@ -57,15 +55,38 @@ public class GithubJob {
                 .setValueOnlyDeserializer(new GithubDeserializationSchema())
                 .build();
 
-        DataStream<GithubKPMsg> s = env.fromSource(source,
+        DataStream<GithubKPMsg> s = env.fromSource(githubSource,
                 WatermarkStrategy.noWatermarks(),
                 "GithubKafkaSource");
 
         DataStream<GithubRedisMsg> dep = s.flatMap(new GithubDependencyMapFunction());
 
-        DataStream<Tuple4<String, String,Long, Integer>> resDS = dep.flatMap(new GitHubFlatMap());
+        DataStream<Tuple4<String, String,Long, Integer>> githubResDS = dep.flatMap(new GitHubFlatMap());
 
-        resDS.addSink(new GithubCHSink());
+        githubResDS.addSink(new GithubCHSink());
+        githubResDS.print();
+
+        FileSource<String> npmSource = FileSource.forRecordStreamFormat(format,
+//                        new Path("file:///data/npm_all_json.txt"))
+//                        new Path("file:///data/b.txt"))
+                        new Path("file:///D:\\Learn\\npm.txt"))
+                .build();
+
+        DataStream<String> npmLines = env.fromSource(npmSource,
+                WatermarkStrategy.noWatermarks(),
+                "NpmFileSource");
+
+        // 将每一行解析成 JSON 对象
+        DataStream<JsonNode> npmPackages = npmLines
+                .map(new NpmPackageMapFunction())
+                .name("NpmPackageMapFunction");
+
+        DataStream<Tuple4<String,String,Long, Integer>> npmResDs = npmPackages
+                .flatMap(new NpmPackageDependencyFunction());
+
+        npmResDs.addSink(new NpmCHSink());
+        npmResDs.print();
+
 
 //        s.print();
 //        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
@@ -75,7 +96,7 @@ public class GithubJob {
 
 //        dep.addSink(new RedisSink<>(conf, new RedisGithubMapper()));
 
-        env.execute("Github Job");
+        env.execute("Job");
     }
 
     private static Options getOptions() {
@@ -88,13 +109,6 @@ public class GithubJob {
         topic.setRequired(false);
         options.addOption(topic);
 
-        Option r = new Option("redis_address", true, "redis address, default: redis");
-        r.setRequired(false);
-        options.addOption(r);
-
-        Option redisPort = new Option("redisPort", true, "redis port, default: 6379");
-        redisPort.setRequired(false);
-        options.addOption(redisPort);
         return options;
     }
 }
