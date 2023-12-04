@@ -5,6 +5,7 @@ import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.example.github.GithubPO;
+import org.example.job.Job;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,8 +16,7 @@ import java.util.Properties;
 
 public class NpmCHSink extends RichSinkFunction<Tuple4<String, String, Long, Integer>> {
     private Properties properties = new Properties();
-    //private String url = "jdbc:ch://172.29.4.74:30012/cloud";
-    private String url = "jdbc:ch://localhost:8123/cloud";
+    private String url = Job.url;
 
     List<NpmPO> list;
 
@@ -50,9 +50,9 @@ public class NpmCHSink extends RichSinkFunction<Tuple4<String, String, Long, Int
         ClickHouseDataSource dataSource;
         Connection conn;
         dataSource = new ClickHouseDataSource(url, properties);
-        conn = dataSource.getConnection("default", "password");
+        conn = dataSource.getConnection("admin", "password");
         try(PreparedStatement ps = conn.prepareStatement(
-                "insert into cloud.npm_dependency_stats select package_id, package_name,version,depended_time_stamp,day,month,year,depended_count" +
+                "insert into npm_dependency_stats select package_id, package_name,version,depended_time_stamp,day,month,year,depended_count" +
                         " from input('package_id String, package_name String, version String,depended_time_stamp Int64," +
                         " day String, month String, year String, depended_count Int32')")) {
             for (int i = 0; i < list.size(); i++) {

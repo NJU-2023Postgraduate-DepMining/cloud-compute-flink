@@ -20,6 +20,14 @@ import org.example.npm.NpmPackageMapFunction;
 import org.example.protos.GithubKPMsg;
 
 public class Job {
+    public static final String url="jdbc:ch://172.29.4.74:30012/cloud";
+    //public static final String url = "jdbc:ch://localhost:8123/cloud";
+    //public static final String url = "jdbc:ch://172.29.4.74:30012/test";
+    public static final String kafka = "localhost:9094";
+
+    public static final String npmPath="file:///D:\\Learn\\npm_100000.txt";
+
+
     public static void main(String[] args) throws Exception {
         Options options = getOptions();
 
@@ -37,7 +45,7 @@ public class Job {
             System.exit(1);
         }
 
-        String kafkaAddress = cmd.getOptionValue("kafka", "localhost:9094");
+        String kafkaAddress = cmd.getOptionValue("kafka", kafka);
         String kafkaTopic = cmd.getOptionValue("topic", "topic_github");
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -69,7 +77,7 @@ public class Job {
         FileSource<String> npmSource = FileSource.forRecordStreamFormat(format,
 //                        new Path("file:///data/npm_all_json.txt"))
 //                        new Path("file:///data/b.txt"))
-                        new Path("file:///D:\\Learn\\npm.txt"))
+                        new Path(npmPath))
                 .build();
 
         DataStream<String> npmLines = env.fromSource(npmSource,

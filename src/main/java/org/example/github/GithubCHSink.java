@@ -4,6 +4,7 @@ import com.clickhouse.jdbc.ClickHouseDataSource;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.example.job.Job;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +14,7 @@ import java.util.*;
 public class GithubCHSink extends RichSinkFunction<Tuple4<String, String, Long, Integer>> {
 
     private Properties properties = new Properties();
-    //private String url = "jdbc:ch://172.29.4.74:30012/cloud";
-    private String url = "jdbc:ch://localhost:8123/cloud";
+    private String url = Job.url;
     List<GithubPO> list;
 
     public GithubCHSink() {
@@ -47,7 +47,7 @@ public class GithubCHSink extends RichSinkFunction<Tuple4<String, String, Long, 
         ClickHouseDataSource dataSource;
         Connection conn;
         dataSource = new ClickHouseDataSource(url, properties);
-        conn = dataSource.getConnection("default", "password");
+        conn = dataSource.getConnection("admin", "password");
         try(PreparedStatement ps = conn.prepareStatement(
                 "insert into github_dependency_stats select package_id, package_name,version,depended_time_stamp,day,month,year,depended_count" +
                         " from input('package_id String, package_name String, version String,depended_time_stamp Int64," +
