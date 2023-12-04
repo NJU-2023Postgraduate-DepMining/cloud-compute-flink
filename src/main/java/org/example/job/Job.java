@@ -23,7 +23,7 @@ public class Job {
     public static final String url="jdbc:ch://172.29.4.74:30012/cloud";
     //public static final String url = "jdbc:ch://localhost:8123/cloud";
     //public static final String url = "jdbc:ch://172.29.4.74:30012/test";
-    public static final String kafka = "localhost:9094";
+    public static final String kafka = "kafka.kafka:9092";
 
     public static final String npmPath="file:///pool/npm_all.txt";
 
