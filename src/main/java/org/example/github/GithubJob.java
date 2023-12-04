@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.redis.RedisSink;
 import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
 import org.apache.flink.table.api.Tumble;
+import org.example.job.Job;
 import org.example.protos.GithubKPMsg;
 import org.apache.commons.cli.*;
 
@@ -36,7 +37,7 @@ public class GithubJob {
             System.exit(1);
         }
 
-        String kafkaAddress = cmd.getOptionValue("kafka", "kafka:9092");
+        String kafkaAddress = cmd.getOptionValue("kafka", Job.kafka);
         String redisAddress = cmd.getOptionValue("redis_address", "redis");
         String kafkaTopic = cmd.getOptionValue("topic", "topic_github");
         int redisPort = Integer.parseInt(cmd.getOptionValue("redisPort", "6379"));
@@ -65,7 +66,7 @@ public class GithubJob {
 
         DataStream<Tuple4<String, String,Long, Integer>> resDS = dep.flatMap(new GitHubFlatMap());
 
-        resDS.addSink(new GithubCHSink());
+        resDS.addSink(new GithubCHSink()).setParallelism(1);
 
 //        s.print();
 //        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()

@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.connectors.redis.RedisSink;
 import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
+import org.example.job.Job;
 import org.example.npm.NpmPackageDependencyFunction;
 import org.example.npm.NpmPackageMapFunction;
 import org.example.npm.RedisNpmMapper;
@@ -33,7 +34,7 @@ public class NpmJob {
         FileSource<String> source = FileSource.forRecordStreamFormat(format,
 //                        new Path("file:///data/npm_all_json.txt"))
 //                        new Path("file:///data/b.txt"))
-                             new Path("file:///D:\\Learn\\npm_100000.txt"))
+                             new Path(Job.npmPath))
                 .build();
 
         DataStream<String> lines = env.fromSource(source,
@@ -49,7 +50,7 @@ public class NpmJob {
                 .flatMap(new NpmPackageDependencyFunction());
 
 
-        counts.addSink(new NpmCHSink());
+        counts.addSink(new NpmCHSink()).setParallelism(1);
         counts.print();
 //        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
 //        sum.print();

@@ -23,9 +23,11 @@ public class Job {
     public static final String url="jdbc:ch://172.29.4.74:30012/cloud";
     //public static final String url = "jdbc:ch://localhost:8123/cloud";
     //public static final String url = "jdbc:ch://172.29.4.74:30012/test";
-    public static final String kafka = "localhost:9094";
+    public static final String kafka = "172.29.4.74:30010";
+    //public static final String kafka = "localhost:9094";
 
-    public static final String npmPath="file:///D:\\Learn\\npm_100000.txt";
+    //public static final String npmPath="file:///D:\\Learn\\npm_100000.txt";
+    public static final String npmPath="file:///pool/npm_all.txt";
 
 
     public static void main(String[] args) throws Exception {
@@ -71,7 +73,7 @@ public class Job {
 
         DataStream<Tuple4<String, String,Long, Integer>> githubResDS = dep.flatMap(new GitHubFlatMap());
 
-        githubResDS.addSink(new GithubCHSink());
+        githubResDS.addSink(new GithubCHSink()).setParallelism(1);
         githubResDS.print();
 
         FileSource<String> npmSource = FileSource.forRecordStreamFormat(format,
@@ -92,7 +94,7 @@ public class Job {
         DataStream<Tuple4<String,String,Long, Integer>> npmResDs = npmPackages
                 .flatMap(new NpmPackageDependencyFunction());
 
-        npmResDs.addSink(new NpmCHSink());
+        npmResDs.addSink(new NpmCHSink()).setParallelism(1);
         npmResDs.print();
 
 
