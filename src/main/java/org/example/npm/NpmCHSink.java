@@ -22,7 +22,6 @@ public class NpmCHSink extends RichSinkFunction<Tuple4<String, String, Long, Int
 
     public NpmCHSink() {
         list=new ArrayList<>();
-
     }
 
     @Override
@@ -38,7 +37,7 @@ public class NpmCHSink extends RichSinkFunction<Tuple4<String, String, Long, Int
 
     @Override
     public void invoke(Tuple4<String, String, Long, Integer> tuple4, Context context) throws Exception {
-        while (list.size()==1000) {
+        while (list.size()>=1000) {
             insert();
         }
         NpmPO npmPO=new NpmPO(tuple4);

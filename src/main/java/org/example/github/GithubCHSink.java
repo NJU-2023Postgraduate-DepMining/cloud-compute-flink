@@ -35,7 +35,7 @@ public class GithubCHSink extends RichSinkFunction<Tuple4<String, String, Long, 
 
     @Override
     public void invoke(Tuple4<String, String, Long, Integer> tuple4, Context context) throws Exception {
-        while (list.size()==1000) {
+        while (list.size()>=1000) {
             insert();
         }
         GithubPO githubPO=new GithubPO(tuple4);

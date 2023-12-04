@@ -71,7 +71,7 @@ public class Job {
 
         DataStream<Tuple4<String, String,Long, Integer>> githubResDS = dep.flatMap(new GitHubFlatMap());
 
-        githubResDS.addSink(new GithubCHSink());
+        githubResDS.addSink(new GithubCHSink()).setParallelism(1);
         githubResDS.print();
 
         FileSource<String> npmSource = FileSource.forRecordStreamFormat(format,
@@ -92,7 +92,7 @@ public class Job {
         DataStream<Tuple4<String,String,Long, Integer>> npmResDs = npmPackages
                 .flatMap(new NpmPackageDependencyFunction());
 
-        npmResDs.addSink(new NpmCHSink());
+        npmResDs.addSink(new NpmCHSink()).setParallelism(1);
         npmResDs.print();
 
 
