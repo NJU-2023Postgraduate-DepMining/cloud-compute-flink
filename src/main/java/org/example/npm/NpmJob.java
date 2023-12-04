@@ -33,7 +33,7 @@ public class NpmJob {
         FileSource<String> source = FileSource.forRecordStreamFormat(format,
 //                        new Path("file:///data/npm_all_json.txt"))
 //                        new Path("file:///data/b.txt"))
-       new Path("file:///D:\\Learn\\npm.txt"))
+                             new Path("file:///D:\\Learn\\npm_100000.txt"))
                 .build();
 
         DataStream<String> lines = env.fromSource(source,
@@ -50,7 +50,7 @@ public class NpmJob {
 
 
         counts.addSink(new NpmCHSink());
-
+        counts.print();
 //        DataStream<Tuple2<String, Integer>> sum = counts.keyBy(x -> x.f0).sum(1);
 //        sum.print();
 
