@@ -25,7 +25,7 @@ public class Job {
     //public static final String url = "jdbc:ch://172.29.4.74:30012/test";
     public static final String kafka = "localhost:9094";
 
-    public static final String npmPath="file:///D:\\Learn\\npm_100000.txt";
+    public static final String npmPath="file:///pool/npm_all.txt";
 
 
     public static void main(String[] args) throws Exception {
