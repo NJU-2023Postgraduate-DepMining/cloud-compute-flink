@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.javakaffee.kryoserializers.UnmodifiableCollectionsSerializer;
 import org.apache.commons.cli.*;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.connector.file.src.reader.StreamFormat;
@@ -18,6 +20,10 @@ import org.example.npm.NpmCHSink;
 import org.example.npm.NpmPackageDependencyFunction;
 import org.example.npm.NpmPackageMapFunction;
 import org.example.protos.GithubKPMsg;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Job {
     public static final String url="jdbc:ch://172.29.4.74:30012/cloud";
@@ -76,6 +82,12 @@ public class Job {
         githubResDS.addSink(new GithubCHSink()).setParallelism(1);
         githubResDS.print();
 
+        DataStream<Tuple4<String, String,Long, Integer>> gitHubMaxDS = githubResDS
+                .keyBy(new MaxKeySelector()).sum(3)
+                .keyBy(new MaxKeySelector()).max(3);
+        gitHubMaxDS.addSink(new MaxCHSink()).setParallelism(1);
+
+
         FileSource<String> npmSource = FileSource.forRecordStreamFormat(format,
 //                        new Path("file:///data/npm_all_json.txt"))
 //                        new Path("file:///data/b.txt"))
@@ -97,6 +109,10 @@ public class Job {
         npmResDs.addSink(new NpmCHSink()).setParallelism(1);
         npmResDs.print();
 
+        DataStream<Tuple4<String, String,Long, Integer>> npmMaxDS = npmResDs
+                .keyBy(new MaxKeySelector()).sum(3)
+                .keyBy(new MaxKeySelector()).max(3);
+        npmMaxDS.addSink(new MaxCHSink()).setParallelism(1);
 
 //        s.print();
 //        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder()
