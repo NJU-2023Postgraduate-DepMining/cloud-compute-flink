@@ -1,8 +1,9 @@
 drop database if exists cloud;
 create database cloud;
 use cloud;
-drop table if exists cloud.github_dependency_stats;
+drop table if exists cloud.github_dependencyser_stats;
 drop table if exists cloud.npm_dependency_stats;
+drop table if exists cloud.max;
 
 CREATE TABLE cloud.github_dependency_stats
 (

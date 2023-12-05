@@ -34,7 +34,13 @@ public class MaxCHSink extends RichSinkFunction<Tuple4<String, String, Long, Int
     @Override
     public void invoke(Tuple4<String, String, Long, Integer> tuple4, Context context) throws Exception {
         MaxPO MaxPO=new MaxPO(tuple4);
-        this.maxPO = MaxPO;
+        if (maxPO==null) {
+            this.maxPO=MaxPO;
+        } else {
+            if (maxPO.getDependedCount()<MaxPO.getDependedCount()) {
+                this.maxPO=MaxPO;
+            }
+        }
     }
 
     private void insert() throws SQLException {
